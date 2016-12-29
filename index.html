@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+  <title>Zauberstuhl</title>
+  <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+  <script src="https://raw.githubusercontent.com/jdfreder/pingjs/master/ping.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <p class="pull-right"><img src="favicon.png" width="32px"></p>
+      <h1>Zauberstuhl</h1>
+      <p id="timer" class="pull-right"></p>
+      <p class="lead">Service Monitoring</p>
+    </div>
+    <div class="row">
+      <h4>Critical</h4>
+
+      <div id="critical"></div>
+    </div>
+    <hr/>
+    <div class="row">
+      <h4>Warning</h4>
+
+      <div id="warning"></div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-md-12">
+        <p>
+          <img src="application-monitor.png"/>
+          <b>
+            <span class="label label-success">$stats_succ OK</span>
+            <span class="label label-warning">$stats_warn WARNING</span>
+            <span class="label label-danger">$stats_crit CRITICAL</span>
+          </b>
+        </p>
+      </div>
+    </div>
+  </div>
+  <script>
+    
+
+
+
+    var no_alerts = $('<div class="col-md-12"><div class="alert alert-info" role="alert">No events found!</div></div>');
+    var alerts = $('<div class="col-md-12"><div class="alert" role="alert"><b class="title"></b> <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></div></div>');
+    var hosts = ["https://joindiaspora.com", "https://sechat.org"];
+
+    for (var i in hosts) {
+      ping(hosts[i]).then(function(d) {
+        a = alerts;
+        console.log("ping ", hosts[i]);
+        a.find('.alert').addClass('alert-info');
+        a.find('.alert').append($("<b>up</b>"));
+        a.find('.title').append($("<b>"+hosts[i]+"</b>"));
+        $('#critical').append(a);
+      }).catch(function(err) {
+        a = alerts;
+        a.find('.alert').addClass('alert-warning');
+        a.find('.alert').append = String(err);
+        a.find('.title').text = hosts[i];
+        $('#critical').append(a);
+      });
+    }
+
+  </script>
+</body>
+</html>
