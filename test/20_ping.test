@@ -1,0 +1,13 @@
+ARR=(
+  '8.8.8.8' # ping google dns server
+  '8.8.4.4'
+  '176.9.43.119' # ping front-end server
+  '213.133.99.99' # hetzner dns server
+  '213.133.98.98'
+  '213.133.100.100'
+)
+
+for entry in "${ARR[@]}"
+do
+  ping -c1 $entry || exit 1;
+done

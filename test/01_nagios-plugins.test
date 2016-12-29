@@ -1,0 +1,16 @@
+WORKING_DIR=$(pwd)
+
+git clone --depth=1 \
+  https://github.com/nagios-plugins/nagios-plugins.git
+
+mkdir -p plugins && \
+  cd nagios-plugins && \
+  ./tools/setup && \
+  ./configure --prefix=${WORKING_DIR}/plugins
+
+make && \
+  make install && \
+  cd $WORKING_DIR && \
+  rm -rf nagios-plugins
+
+export PATH=${PATH}/plugins/libexec

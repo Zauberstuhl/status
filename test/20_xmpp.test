@@ -1,0 +1,21 @@
+HOSTS=(
+  '176.9.43.119'
+)
+
+PORTS=(
+  5269
+  5222
+  5280
+)
+
+# dependency
+sudo apt-get install -y nmap || exit 1;
+
+for host in "${HOSTS[@]}"; do
+  for port in "${PORTS[@]}"; do
+    nmap -p $port $host |grep open
+    if [ $? -ne 0 ]; then
+      exit 1;
+    fi
+  done
+done

@@ -1,0 +1,16 @@
+DOMAINS=(
+  "zauberstuhl.de:Open Source Projects"
+  "altbaden-bruchsal.de:supported by"
+  "shopping-reflection.com:supported by"
+  "shopping-reflection.de:supported by"
+  "awesome-gilde.eu:RECRUITMENT"
+  "joindiaspora.com:Diaspora*"
+  "sechat.org:Diaspora*"
+)
+
+for domain in "${DOMAINS[@]}"; do
+  check_http --ssl -f follow -H ${domain%%:*} -p 443 -R "${domain##*:}"
+  if [ $? -ne 0 ]; then
+    exit 1;
+  fi
+done

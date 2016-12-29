@@ -1,3 +1,0 @@
-[submodule "test"]
-	path = test
-	url = git@git.zauberstuhl.de:zauberstuhl/travmo_tests.git
