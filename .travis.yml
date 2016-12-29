@@ -1,0 +1,39 @@
+sudo: true
+
+dist: jessie
+
+env:
+  global:
+    secure: "uOz5kbSmsHyKHoNbg6qAFnVpJBaocZO93I7OJWAsmtgqOqDnWPCosuu7+EbOz9dJCWxzN7w7jGNIA/FFRrhZaNxI2zkDKPmoZqdGhLRbsnXolxyoXQblV2FxfKyyHJoglmcQfMqQfWxPdcwMashDFtrneN6YdpO0Umcw23epebJ2UMxBzKuDtl0C4RI5KryBYrbpXS67vYEFdEEA83/CJsDmntypgapkeLLI5x46uA52ptw0rKDegLPdeBZrVC03HTVgiVkKg/xVvwv6PBRJO0q/Df49V+bJhfX07mJnBQu5/jDoF5OvCZ+7sG39zf/WddxvOU5V333XKxXYi/hpQt2R9iG+53zcGfqAJgnuvjkrIXBGloXzgg5N0/WDrstz1ODLZhmm2LoYvt8dSyaedujdVBrPpoK+Jb64XHcvI133sHdOwPBuToP9f97DF19+qtLTsV7Y27CR7m4B8MkCC+ETSl0ChFFqKb7OP8zpqPI1qa+/GcmUv6mPpeKApl8c/cOgwR4uY0xL79czkBfg4s/2atLwe2NIkhshwqVE2ndgDbOuZ7XR5PmKKdm8jLAg7i8DNclihUdQCBfDQmf7OB5Ut5z6W4Bpw1VXiJzpMi9dcsm5Y+jjqSx9VFGV5sOSWKBozZmdFPybF4eG5HHYgEuudyd45Lp91CPftJXm/nI="
+
+branches:
+  only:
+    - 'master'
+
+addons:
+  apt:
+    packages:
+      - openssl
+      - git-core
+
+git:
+  submodules: false
+
+before_install: |
+  git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}.git
+  # change to last commit author
+  git config user.name \
+    "$(git --no-pager show -s --format='%an' HEAD~1)"
+  git config user.email \
+    "$(git --no-pager show -s --format='%ae' HEAD~1)"
+
+install: |
+  mkdir -p ~/.ssh && cp -v ${TRAVIS_BUILD_DIR}/.ssh/* ~/.ssh
+  openssl rsa -in ~/.ssh/id_rsa.enc \
+    -out ~/.ssh/id_rsa -passin pass:$SSHPASS
+  chmod 600 ~/.ssh/id_rsa && unset GIT_SSH
+  git submodule update --init --recursive
+  # fetch latest test revision
+  cd test && git pull origin master && cd ..
+
+script: bash travmo.sh
