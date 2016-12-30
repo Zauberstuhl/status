@@ -19,6 +19,11 @@
 # commit results to
 branch="monitoring"
 
+starting_time=$(date +%s)
+# the build should take at least 5 minutes
+# otherwise we trigger the rebuild too often
+min_duration=$(( 5 * 60 ))
+
 function log {
   echo -ne "\n$@"
 }
@@ -49,6 +54,15 @@ for test in $tests; do
     error+=("$test: $output") && log "[-] $test"
   }
 done
+
+ending_time=$(date +%s)
+diff_time=$(($ending_time - $starting_time))
+
+if [ $diff_time -lt $min_duration ]; then
+  sleep_time=$(($min_duration - $diff_time))
+  log "Sleeping for $sleep_time more seconds\n" && \
+    sleep $sleep_time
+fi
 
 unsuccessful=${#error[@]}
 successful=$(($tests_cnt - $unsuccessful))
