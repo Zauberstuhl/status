@@ -53,7 +53,7 @@ done
 unsuccessful=${#error[@]}
 successful=$(($tests_cnt - $unsuccessful))
 
-log "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful"
+log "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful\n"
 
 if [[ "$unsuccessful" != "0" ]]; then
   # switch from detach mode

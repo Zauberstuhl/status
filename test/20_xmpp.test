@@ -8,12 +8,9 @@ PORTS=(
   5280
 )
 
-# dependency
-sudo apt-get install -y nmap || exit 1;
-
 for host in "${HOSTS[@]}"; do
   for port in "${PORTS[@]}"; do
-    nmap -p $port $host |grep open
+    check_tcp $host -p $port
     if [ $? -ne 0 ]; then
       exit 1;
     fi
