@@ -20,6 +20,8 @@
 branch="monitoring"
 # https://docs.travis-ci.com/user/customizing-the-build#Build-Timeouts
 max_duration=$((45 * 60))
+# wait between test restarts
+restart_tests=$((2 * 60))
 
 function log {
   echo -ne "\n$@"
@@ -40,6 +42,10 @@ tests_cnt=$(echo $tests |grep -o ' ' |wc -l)
 starting_time=$(date +%s)
 ending_time=$(($starting_time + $max_duration))
 log "Found $tests_cnt tests (+ succeeded, - failed, x skipped)"
+
+# switch from detach mode
+git branch -D $branch || log "No $branch branch found!\n"
+git checkout -b $branch
 
 while [[ $(date +%s) -lt $ending_time ]];
 do
@@ -84,17 +90,25 @@ do
   unsuccessful=$(($unsuccessful + ${#error[@]}))
   successful=$(($successful + ($tests_cnt - $unsuccessful)))
   log "[ ] Successful: $successful Failed: $unsuccessful ($(date))"
-  sleep 10
+  # commit results for status page
+  git commit --allow-empty \
+    -m "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful
+
+  ${error[@]}
+  "
+  # merge and push to upstream
+  git pull origin $branch && git push origin $branch || {
+    message="wasn't able to push results to upstream"
+    log "[-] $message" && send_warn "Upstream push failed" "$message"
+  }
+  sleep $restart_tests
 done
 
-# switch from detach mode
-git branch -D $branch || log "No $branch branch found!\n"
-git checkout -b $branch
-# commit results with all error messages
-git commit --allow-empty \
-  -m "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful"
-
-# merge from upstream first
-git pull origin $branch
-# push to upstream
-git push origin $branch && log "$(git log -1)\n"
+# start a rebuild again
+curl -s -X POST \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Travis-API-Version: 3" \
+  -H "Authorization: token $travistoken" \
+  -d "{\"request\": {\"branch\":\"${TRAVIS_BRANCH}\"}}" \
+  https://api.travis-ci.org/repo/${TRAVIS_REPO_SLUG}/requests
