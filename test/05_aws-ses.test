@@ -1,0 +1,25 @@
+function send_mail {
+  to="lukas@zauberstuhl.de"
+  from="no-reply@zauberstuhl.de"
+  endpoint="email-smtp.eu-west-1.amazonaws.com"
+
+  echo "$2" | heirloom-mailx -v -s "$1" \
+    -S smtp="$endpoint:587" \
+    -S smtp-use-starttls \
+    -S smtp-auth=login \
+    -S smtp-auth-user="$smtpauthuser" \
+    -S smtp-auth-password="$smtpauthpassword" \
+    -r $from $to > /dev/null 2>&1
+}
+
+function send_crit {
+  send_mail "** PROBLEM Service Alert: $1 is CRITICAL **" "$2"
+}
+
+function send_warn {
+  send_mail "** PROBLEM Service Alert: $1 is WARNING **" "$2"
+}
+
+function send_info {
+  send_mail "** RECOVERY Service Alert: $1 is OK **" "$2"
+}
