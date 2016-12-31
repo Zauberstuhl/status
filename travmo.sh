@@ -43,6 +43,7 @@ log "Found $tests_cnt tests (+ succeeded, - failed, x skipped)"
 
 while [[ $(date +%s) -lt $ending_time ]];
 do
+  test_nr=1
   for test in $tests; do
     { # try executing test script if test
       # starts with 01-09 it will be sourced
@@ -54,6 +55,10 @@ do
           first_run=false
           output=$(source $test 2>&1)
           log "[+] $test"
+          if [[ "${error[$test_nr]}" -ne "" ]]; then
+            send_info "$test" "${error[$test_nr]}"
+            ${error[$test_nr]} = "" # remove element
+          fi
         else
           log "[x] $test"
         fi
@@ -63,8 +68,10 @@ do
       fi
     } || {
       # add to error messages if execution failed
-      error+=("$test: $output") && log "[-] $test"
+      error[$test_nr]="$output" && log "[-] $test"
+      send_crit "$test" "$output"
     }
+    ((test_nr+=1))
   done
   unsuccessful=$(($unsuccessful + ${#error[@]}))
   successful=$(($successful + ($tests_cnt - $unsuccessful)))
@@ -77,12 +84,9 @@ git branch -D $branch || log "No $branch branch found!\n"
 git checkout -b $branch
 # commit results with all error messages
 git commit --allow-empty \
-  -m "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful
-
-$error"
+  -m "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful"
 
 # merge from upstream first
 git pull origin $branch
 # push to upstream
-git push origin $branch && \
-  log "$(git log -1)\n"
+git push origin $branch && log "$(git log -1)\n"
