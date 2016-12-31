@@ -55,7 +55,7 @@ do
           output=$(source $test 2>&1)
           log "[+] $test"
           if [[ "${error[$test_nr]}" -ne "" ]]; then
-            send_info "$test" "${error[$test_nr]}"
+            send_info "$test" "$output"
             ${error[$test_nr]} = "" # remove element
           fi
         else
@@ -64,6 +64,10 @@ do
       else
         output=$(bash $test 2>&1)
         log "[+] $test"
+        if [[ "${error[$test_nr]}" -ne "" ]]; then
+          send_info "$test" "$output"
+          ${error[$test_nr]} = "" # remove element
+        fi
       fi
     } || {
       # add to error messages if execution failed
