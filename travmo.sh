@@ -52,27 +52,26 @@ do
       basename=$(basename $test)
       if [ ${basename:0:2} -lt 10 ]; then
         if $first_run; then
-          output=$(source $test 2>&1)
-          log "[+] $test"
-          if [[ "${error[$test_nr]}" -ne "" ]]; then
-            send_info "$test" "$output"
-            ${error[$test_nr]} = "" # remove element
-          fi
+          source $test 2>&1 && log "[+] $test"
         else
           log "[x] $test"
         fi
       else
-        output=$(bash $test 2>&1)
-        log "[+] $test"
-        if [[ "${error[$test_nr]}" -ne "" ]]; then
-          send_info "$test" "$output"
-          ${error[$test_nr]} = "" # remove element
-        fi
+        output=$(bash $test 2>&1) && {
+          log "[+] $test"
+          if [[ "${error[$test_nr]}" -ne "" ]]; then
+            send_info "$test" "$output"
+            error[$test_nr]="" # remove element
+          fi
+        } || false
       fi
     } || {
       # add to error messages if execution failed
-      error[$test_nr]="$output" && log "[-] $test"
-      send_crit "$test" "$output"
+      log "[-] $test"
+      if [[ "${error[$test_nr]}" -eq "" ]]; then
+        send_crit "$test" "$output"
+      fi
+      error[$test_nr]="1"
     }
     ((test_nr+=1))
   done

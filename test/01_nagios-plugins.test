@@ -13,4 +13,4 @@ make && \
   cd $WORKING_DIR && \
   rm -rf nagios-plugins
 
-export PATH=${PATH}/plugins/libexec
+export PATH=${PATH}:${WORKING_DIR}/plugins/libexec
