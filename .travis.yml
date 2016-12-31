@@ -8,7 +8,7 @@ env:
 
 branches:
   only:
-    - 'master'
+    - 'monitoring'
 
 addons:
   apt:
@@ -32,8 +32,5 @@ install: |
   openssl rsa -in ~/.ssh/id_rsa.enc \
     -out ~/.ssh/id_rsa -passin pass:$SSHPASS
   chmod 600 ~/.ssh/id_rsa && unset GIT_SSH
-  git submodule update --init --recursive
-  # fetch latest test revision
-  cd test && git pull origin master && cd ..
 
 script: bash travmo.sh
