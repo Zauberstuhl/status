@@ -52,7 +52,6 @@ do
       basename=$(basename $test)
       if [ ${basename:0:2} -lt 10 ]; then
         if $first_run; then
-          first_run=false
           output=$(source $test 2>&1)
           log "[+] $test"
           if [[ "${error[$test_nr]}" -ne "" ]]; then
@@ -72,6 +71,7 @@ do
       send_crit "$test" "$output"
     }
     ((test_nr+=1))
+    first_run=false
   done
   unsuccessful=$(($unsuccessful + ${#error[@]}))
   successful=$(($successful + ($tests_cnt - $unsuccessful)))
