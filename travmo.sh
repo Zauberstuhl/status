@@ -75,8 +75,11 @@ do
       send_crit "$test" "$output"
     }
     ((test_nr+=1))
-    first_run=false
   done
+  # setup scripts from 01-09
+  # should run only once
+  first_run=false
+
   unsuccessful=$(($unsuccessful + ${#error[@]}))
   successful=$(($successful + ($tests_cnt - $unsuccessful)))
   log "[ ] Successful: $successful Failed: $unsuccessful ($(date))"
