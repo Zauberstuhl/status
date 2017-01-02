@@ -92,7 +92,7 @@ do
   ${error[@]}
   "
   # merge and push to upstream
-  git pull origin $branch && git push origin $branch || {
+  git pull --no-edit origin $branch && git push origin $branch || {
     message="wasn't able to push results to upstream"
     log "[-] $message" && send_warn "Upstream push failed" "$message"
   }
