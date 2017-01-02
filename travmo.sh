@@ -44,8 +44,7 @@ ending_time=$(($starting_time + $max_duration))
 log "Found $tests_cnt tests (+ succeeded, - failed, x skipped)"
 
 # switch from detach mode
-git branch -D $branch || log "No $branch branch found!\n"
-git checkout -b $branch
+git checkout -b $branch > /dev/null 2>&1
 
 while [[ $(date +%s) -lt $ending_time ]];
 do
@@ -87,7 +86,7 @@ do
 
   unsuccessful=$(($unsuccessful + ${#error[@]}))
   successful=$(($successful + ($tests_cnt - $unsuccessful)))
-  log "[ ] Successful: $successful Failed: $unsuccessful ($(date))"
+  log "[ ] Successful: $successful Failed: $unsuccessful ($(date))\n"
   # commit results for status page
   git commit --allow-empty \
     -m "Tests: $tests_cnt Successful: $successful Failed: $unsuccessful
