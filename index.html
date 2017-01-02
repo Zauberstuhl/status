@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
   <title>Zauberstuhl</title>
@@ -12,7 +12,7 @@
 <body>
   <div class="container">
     <div class="page-header">
-      <p class="pull-right"><img src="favicon.png" width="32px"></p>
+      <p class="pull-right"><img src="img/favicon.png" width="32px"></p>
       <h1>Zauberstuhl</h1>
       <p id="timer" class="pull-right"></p>
       <p class="lead">Service Monitoring</p>
@@ -22,52 +22,54 @@
 
       <div id="critical"></div>
     </div>
-    <hr/>
+    <!--<hr/>
     <div class="row">
       <h4>Warning</h4>
 
       <div id="warning"></div>
-    </div>
+    </div>-->
     <hr/>
     <div class="row">
       <div class="col-md-12">
         <p>
-          <img src="application-monitor.png"/>
+          <img src="img/application-monitor.png"/>
           <b>
-            <span class="label label-success">$stats_succ OK</span>
-            <span class="label label-warning">$stats_warn WARNING</span>
-            <span class="label label-danger">$stats_crit CRITICAL</span>
+            <span class="label label-success" id="statsSucc">0 OK</span>
+            <span class="label label-warning" id="statsWarn">0 WARNING</span>
+            <span class="label label-danger" id="statsCrit">0 CRITICAL</span>
           </b>
         </p>
       </div>
     </div>
   </div>
   <script>
-    
-
-
-
     var no_alerts = $('<div class="col-md-12"><div class="alert alert-info" role="alert">No events found!</div></div>');
     var alerts = $('<div class="col-md-12"><div class="alert" role="alert"><b class="title"></b> <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></div></div>');
-    var hosts = ["https://joindiaspora.com", "https://sechat.org"];
 
-    for (var i in hosts) {
-      ping(hosts[i]).then(function(d) {
-        a = alerts;
-        console.log("ping ", hosts[i]);
-        a.find('.alert').addClass('alert-info');
-        a.find('.alert').append($("<b>up</b>"));
-        a.find('.title').append($("<b>"+hosts[i]+"</b>"));
-        $('#critical').append(a);
-      }).catch(function(err) {
-        a = alerts;
-        a.find('.alert').addClass('alert-warning');
-        a.find('.alert').append = String(err);
-        a.find('.title').text = hosts[i];
-        $('#critical').append(a);
-      });
-    }
+    $.ajax({
+      url: "https://api.github.com/repos/Zauberstuhl/status/commits/monitoring",
+      dataType: "jsonp"
+    }).done(function(data) {
+      console.log(data.data.commit.message);
+      // Tests: 5 Successful: 5 Failed: 0
+      var regex = /Tests\:\s(\d+?)\sSuccessful\:\s(\d+?)\sFailed\:\s(\d+?)(\s|$|\n|\r)/g;
+      match = regex.exec(data.data.commit.message);
+      if (match != null) {
+        var tests = match[1], successful = match[2], failed = match[3];
+        $('#statsSucc').html(successful+" OK");
+        $('#statsCrit').html(failed+" CRITICAL");
 
+        if (failed > 0) {
+          a = alerts;
+          a.find('.alert').addClass('alert-danger');
+          a.find('.alert').append = data.data.commit.message;
+          a.find('.title').text = "Critical";
+          $('#critical').html(a);
+        } else {
+          $('#critical').html(no_alerts);
+        }
+      }
+    });
   </script>
 </body>
 </html>
