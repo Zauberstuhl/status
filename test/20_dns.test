@@ -1,3 +1,5 @@
+# require check_http
+
 DOMAINS=(
   "zauberstuhl.de:Open Source Projects"
   "altbaden-bruchsal.de:supported by"

@@ -1,16 +1,18 @@
-function send_mail {
-  to="lukas@zauberstuhl.de"
-  from="no-reply@zauberstuhl.de"
-  endpoint="email-smtp.eu-west-1.amazonaws.com"
+# require smtpauthuser
+# require smtpauthpassword
+# require smtpendpoint
+# require smtpto
+# require smtpfrom
 
-  log "[ ] sending notification to $to"
+function send_mail {
+  log "[ ] sending notification to $smtpto"
   echo "$2" | heirloom-mailx -v -s "$1" \
-    -S smtp="$endpoint:587" \
+    -S smtp="$smtpendpoint:587" \
     -S smtp-use-starttls \
     -S smtp-auth=login \
     -S smtp-auth-user="$smtpauthuser" \
     -S smtp-auth-password="$smtpauthpassword" \
-    -r $from $to > /dev/null 2>&1
+    -r $smtpfrom $smtpto > /dev/null 2>&1
 }
 
 function send_crit {

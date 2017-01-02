@@ -1,3 +1,5 @@
+# require ping
+
 ARR=(
   '8.8.8.8' # ping google dns server
   '8.8.4.4'
