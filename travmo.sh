@@ -58,9 +58,7 @@ do
       basename=$(basename $test)
       if [ ${basename:0:2} -lt 10 ]; then
         if $first_run; then
-          output=$(source $test 2>&1) && {
-            log "[+] $test"
-          }
+          . $test > /dev/null 2>&1 && log "[+] $test"
         else
           log "[x] $test"
         fi
