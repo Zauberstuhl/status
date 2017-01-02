@@ -31,8 +31,6 @@ function log {
 head -n 11 README.md
 
 error=()
-unsuccessful=0
-successful=0
 first_run=true
 tests=$(find test/ -name '*.test' | sort)
 tests_cnt=$(echo $tests |grep -o ' ' |wc -l)
@@ -76,7 +74,7 @@ do
       if [[ "${error[$test_nr]}" -eq "" ]]; then
         send_crit "$test" "$output"
       fi
-      error[$test_nr]="1"
+      error[$test_nr]="$test: $output"
     }
     ((test_nr+=1))
   done
@@ -84,8 +82,8 @@ do
   # should run only once
   first_run=false
 
-  unsuccessful=$(($unsuccessful + ${#error[@]}))
-  successful=$(($successful + ($tests_cnt - $unsuccessful)))
+  unsuccessful=${#error[@]}
+  successful=$(($tests_cnt - $unsuccessful))
   log "[ ] Successful: $successful Failed: $unsuccessful ($(date))\n"
   # commit results for status page
   git commit --allow-empty \
