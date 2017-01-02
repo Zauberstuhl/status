@@ -99,6 +99,7 @@ do
   sleep $restart_tests
 done
 
+encoded_slug=$(echo $TRAVIS_REPO_SLUG |sed 's/\//%2F/g')
 # start a rebuild again
 curl -s -X POST \
   -H "Content-Type: application/json" \
@@ -106,4 +107,4 @@ curl -s -X POST \
   -H "Travis-API-Version: 3" \
   -H "Authorization: token $travistoken" \
   -d "{\"request\": {\"branch\":\"${TRAVIS_BRANCH}\"}}" \
-  https://api.travis-ci.org/repo/${TRAVIS_REPO_SLUG}/requests
+  https://api.travis-ci.org/repo/${encoded_slug}/requests
