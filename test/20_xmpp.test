@@ -1,3 +1,5 @@
+# require check_tcp
+
 HOSTS=(
   '176.9.43.119'
 )
