@@ -40,8 +40,6 @@ addons:
     - git-core
     - heirloom-mailx
     - curl
-git:
-  submodules: false
 before_install: |
   git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}.git
   # change to last commit author
