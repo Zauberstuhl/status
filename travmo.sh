@@ -74,7 +74,7 @@ do
         if [[ "$(type -t $require)" != "" ]]; then
           continue
         fi
-        if [[ -z "$require" ]]; then
+        if [[ ! -z "$require" ]]; then
           continue
         fi
         required_missing+=("$require")
