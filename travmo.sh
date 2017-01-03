@@ -139,7 +139,7 @@ do
   sleep $restart_tests
 done
 
-if [[ "$travistoken" -ne "" ]]; then
+if [[ "$travistoken" != "" ]]; then
  encoded_slug=$(echo $TRAVIS_REPO_SLUG |sed 's/\//%2F/g')
  # start a rebuild again
  curl -s -X POST \
