@@ -29,7 +29,7 @@ function log {
     prefix=" $2"
   fi
   formatted=`date +'%Y-%m-%d %H:%M:%S'`
-  echo -e "${formatted}${prefix} $1" |fold -w70 -s | sed '2~1s/^/  /' >&3
+  echo -e "${formatted}${prefix} $1" |fold -w70 -s | sed '2~1s/^/  /'
 }
 # NOTE for email capabilities you should override
 # these functions e.g. like in test/05_aws-ses.test
